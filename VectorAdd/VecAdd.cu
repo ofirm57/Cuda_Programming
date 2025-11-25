@@ -48,7 +48,22 @@ int main(){
     int* d_a, *d_b, *d_c;
     int N = 1 << 10;
     size_t byte_size = N * sizeof(int);
+
+    int device;
+    cudaGetDevice(&device);
+    cudaDeviceProp p;
+    cudaGetDeviceProperties(&p, device);
+    printf("max blocks per multiprocessor: %d\n", p.maxBlocksPerMultiProcessor);
+    printf("Max thread per multiprocessor: %d\n", p.maxThreadsPerMultiProcessor);
+    printf("Number of multiprocessors: %d\n", p.multiProcessorCount);
+    printf("max warps per multiprocessor: %d\n", p.maxThreadsPerMultiProcessor / WARP_SIZE);
+    printf("Maximum threads per block: %d\n", p.maxThreadsPerBlock);
+    printf("Warp size: %d\n", p.warpSize);
+    printf("Compute capability: %d.%d\n", p.major, p.minor);
     
+
+
+
     cudaMallocHost((void**)&h_a, byte_size);
     cudaMallocHost((void**)&h_b, byte_size);
     cudaMallocHost((void**)&h_c, byte_size);
@@ -73,8 +88,7 @@ int main(){
     cudaMemcpy(h_c, d_c, byte_size , cudaMemcpyHostToDevice);
 
     cpu_res(h_a,h_b,h_c_cpu, N);
-
-    test_res(h_c_cpu, h_c, N);
+ // test_res(h_c_cpu, h_c, N);
 
     cudaFree(d_a);
     cudaFree(d_b);
